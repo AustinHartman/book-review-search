@@ -1,38 +1,33 @@
 from bs4 import BeautifulSoup
 import requests
-import re
 
-# returns tuple (title with author(s), rating 0-5, number of reviews)
+# returns tuple (rating 0-5, number of reviews)
 def getAmazonRatings(url):
-    print("FUNC ENTERED")
-    page = requests.get(url)
-    print("made it here")
-    soup = BeautifulSoup(page.content, 'html.parser')
-    soup = BeautifulSoup(soup.prettify(), 'html.parser')
+    ls = url.split('/')
+    for i in range(len(ls)):
+        if (ls[i] == 'dp'):
+            asin = ls[i+1]
+            break
+    # to use this for scraping, first the asin key must be appended
+    review_url = 'https://www.amazon.com/gp/customer-reviews/widgets/average-customer-review/popover/ref=dpx_acr_pop_?contextId=dpx&asin='
+    review_url += asin
 
-    ## TITLE ##
-    title = soup.find('title')
-    # clean text
-    title = title.text
-    title = re.sub(r'[^a-zA-Z\s,]', '', title)
-    title = re.sub('Amazoncom', '', title)
-    title = re.sub('Books', '', title)
-
-    print(title)
+    page = requests.get(review_url)
+    soup = BeautifulSoup(page.content, 'lxml')
 
     ## RATING ##
-    rating = soup.find('span', attrs={'class', 'arp-rating-out-of-text'})
+    rating = soup.find('span', attrs={'class', "a-size-base a-color-secondary"})
     rating = rating.text
+    # example text: '4.0 starts out of five'
     rating = rating.split()[0]
 
-    print(rating)
-
     ## NUMBER OF REVIEWS ##
-    num_reviews = soup.find('span', id='acrCustomerReviewText')
+    num_reviews = soup.find('div', attrs={'class', "a-section a-spacing-none a-text-center"})
     num_reviews = num_reviews.text
-    num_reviews = num_reviews.split()[0]
+    # example text: 'see all 31 reviews'
+    num_reviews = num_reviews.split()[2]
 
-    return (title, rating, num_reviews)
+    return (rating, num_reviews)
 
 # returns tuple (rating 0-5, number of reviews)
 def getGoodreadsRatings(url):
