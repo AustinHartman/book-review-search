@@ -16,20 +16,20 @@ def getAmazonRatings(url):
     soup = BeautifulSoup(page.content, 'lxml')
 
     ## RATING ##
-    rating = soup.find('span', attrs={'class', "a-size-base a-color-secondary"})
+    rating = soup.find('span', attrs={'class': "a-size-base a-color-secondary"})
     rating = rating.text
     # example text: '4.0 starts out of five'
     rating = rating.split()[0]
 
     ## NUMBER OF REVIEWS ##
-    num_reviews = soup.find('div', attrs={'class', "a-section a-spacing-none a-text-center"})
+    num_reviews = soup.find('div', attrs={'class': "a-section a-spacing-none a-text-center"})
     num_reviews = num_reviews.text
     # example text: 'see all 31 reviews'
     num_reviews = num_reviews.split()[2]
 
     return (rating, num_reviews)
 
-# returns tuple (rating 0-5, number of reviews)
+# returns tuple (rating 0-5, number of reviews, author (1st author if more than one))
 def getGoodreadsRatings(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "lxml")
@@ -37,7 +37,10 @@ def getGoodreadsRatings(url):
     rating = soup.find('span', attrs={'itemprop': 'ratingValue'})
     rating = rating.text.strip()
 
-    num_reviews = soup.find('span', attrs={'class', 'votes value-title'})
+    num_reviews = soup.find('span', attrs={'class': 'votes value-title'})
     num_reviews = num_reviews.text.strip()
 
-    return (rating, num_reviews)
+    author = soup.find('span', attrs={'itemprop': 'name'})
+    author = author.text
+
+    return (rating, num_reviews, author)

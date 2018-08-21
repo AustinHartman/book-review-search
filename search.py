@@ -32,23 +32,35 @@ if (len(amazon_url)<1 and len(goodreads_url)<1):
     print("Sorry, no ratings were found.")
 
 
+gr_works = True
+az_works = True
 ### NOW SCRAPE DATA FROM WEBSITES IF LINKS FOUND ####
-if (len(amazon_url)>0):
-    try:
-        amazon_data = bs4_functions.getAmazonRatings(amazon_url)
-        print("\n")
-        print("AMAZON")
-        print("Rating:", amazon_data[0])
-        print("Number of Reviews:", amazon_data[1])
-    except:
-        print("Sorry, something went wront with the Amazon scraping")
+try:
+    amazon_data = bs4_functions.getAmazonRatings(amazon_url)
+except:
+    az_works = False
+    print("\n")
+    print("Sorry, something went wront with the Amazon scraping")
 
-if (len(goodreads_url)>0):
-    try:
-        goodreads_data = bs4_functions.getGoodreadsRatings(goodreads_url)
-        print("\n")
-        print("GOODREADS")
-        print("Rating:", goodreads_data[0])
-        print("Number of Reviews:", goodreads_data[1])
-    except:
-        print("Sorry, something went wrong with the goodreads scraping")
+try:
+    goodreads_data = bs4_functions.getGoodreadsRatings(goodreads_url)
+except:
+    gr_works = False
+    print("\n")
+    print("Sorry, something went wrong with the goodreads scraping")
+
+if (gr_works):
+    print("\n")
+    print("Author:", goodreads_data[2])
+
+if (az_works):
+    print("\n")
+    print("AMAZON")
+    print("Rating:", amazon_data[0])
+    print("Number of Reviews:", amazon_data[1])
+
+if (gr_works):
+    print("\n")
+    print("GOODREADS")
+    print("Rating:", goodreads_data[0])
+    print("Number of Reviews:", goodreads_data[1])
