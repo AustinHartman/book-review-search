@@ -1,8 +1,9 @@
 from googlesearch import search
 import requests
-import scrape
 import sys
 
+import scrape
+import book_records
 
 def getSearch():
     s = input("Book title: ")
@@ -31,37 +32,60 @@ def checkFound(url, site):
         return False
 
 
-s = getSearch()
+def saveBook(file, amazon_data, goodreads_data):
+    if (not book_records.inRecords(file, goodreads_data[3])):
+        book_records.appendRecord(file, amazon_data, goodreads_data)
 
-print("\nFetching data...\n")
 
-goodreads_url = getURL(s, "goodreads")
-amazon_url = getURL(s, "amazon")
+def searchBookData():
+    s = getSearch()
 
-gr_found = checkFound(goodreads_url, "Goodreads")
-az_found = checkFound(amazon_url, "Amazon")
+    print("\nFetching data...\n")
 
-### NOW SCRAPE DATA FROM WEBSITES IF LINKS FOUND ####
-if (gr_found):
-    try:
-        goodreads_data = scrape.getGoodreadsRatings(goodreads_url)
-        print("\n")
-        print("Author:", goodreads_data[2])
-        print("\n")
-        print("GOODREADS")
-        print("Rating:", goodreads_data[0])
-        print("Number of Reviews:", goodreads_data[1])
-    except:
-        print("\n")
-        print("Sorry, something went wrong with the goodreads scraping")
+    goodreads_url = getURL(s, "goodreads")
+    amazon_url = getURL(s, "amazon")
 
-if (az_found):
-    try:
-        amazon_data = scrape.getAmazonRatings(amazon_url)
-        print("\n")
-        print("AMAZON")
-        print("Rating:", amazon_data[0])
-        print("Number of Reviews:", amazon_data[1])
-    except:
-        print("\n")
-        print("Sorry, something went wrong with the Amazon scraping")
+    gr_found = checkFound(goodreads_url, "Goodreads")
+    az_found = checkFound(amazon_url, "Amazon")
+
+    ### NOW SCRAPE DATA FROM WEBSITES IF LINKS FOUND ####
+    if (gr_found):
+        try:
+            goodreads_data = scrape.getGoodreadsRatings(goodreads_url)
+            print("\n")
+            print("Title:", goodreads_data[3])
+            print("Author:", goodreads_data[2])
+            print("\n")
+            print("GOODREADS")
+            print("Rating:", goodreads_data[0])
+            print("Number of Reviews:", goodreads_data[1])
+        except:
+            gr_found = False
+            print("\n")
+            print("Sorry, something went wrong with the goodreads scraping")
+
+    if (az_found):
+        try:
+            amazon_data = scrape.getAmazonRatings(amazon_url)
+            print("\n")
+            print("AMAZON")
+            print("Rating:", amazon_data[0])
+            print("Number of Reviews:", amazon_data[1])
+        except:
+            az_found = False
+            print("\n")
+            print("Sorry, something went wrong with the Amazon scraping")
+
+    # save book
+    if (az_found and gr_found):
+        i = input("\nWould you like to save this book? (y/n) ")
+        if (i == 'y'):
+            saveBook('books.csv', amazon_data, goodreads_data)
+
+
+findReview = 'y'
+
+while (findReview == 'y'):
+    searchBookData()
+    print("\n")
+    findReview = input("Search another book (y/n): ")

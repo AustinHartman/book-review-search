@@ -29,7 +29,7 @@ def getAmazonRatings(url):
 
     return (rating, num_reviews)
 
-# returns tuple (rating 0-5, number of reviews, author (1st author if more than one))
+# returns tuple (rating 0-5, number of reviews, author (1st author if more than one), title)
 def getGoodreadsRatings(url):
     page = requests.get(url)
     soup = BeautifulSoup(page.content, "lxml")
@@ -40,7 +40,15 @@ def getGoodreadsRatings(url):
     num_reviews = soup.find('span', attrs={'class': 'votes value-title'})
     num_reviews = num_reviews.text.strip()
 
-    author = soup.find('span', attrs={'itemprop': 'name'})
-    author = author.text
+    title = soup.find('title')
+    title_list = title.text.split()
 
-    return (rating, num_reviews, author)
+    for i, e in reversed(list(enumerate(title_list))):
+        if (e == "by"):
+            title = ' '.join(title_list[:i])
+            author = ' '.join(title_list[i+1:])
+
+    # author = soup.find('span', attrs={'itemprop': 'name'})
+    # author = author.text
+
+    return (rating, num_reviews, author, title)
