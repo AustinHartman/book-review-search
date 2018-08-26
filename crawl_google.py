@@ -1,9 +1,15 @@
 from googlesearch import search
 import requests
 import sys
+import os
 
 import scrape
 import book_records
+
+gr_found = False
+az_found = False
+amazon_data = ()
+goodreads_data = ()
 
 def getSearch():
     s = input("Book title: ")
@@ -32,12 +38,50 @@ def checkFound(url, site):
         return False
 
 
-def saveBook(file, amazon_data, goodreads_data):
-    if (not book_records.inRecords(file, goodreads_data[3])):
-        book_records.appendRecord(file, amazon_data, goodreads_data)
+def saveBook(gr_found, az_found, goodreads_data, amazon_data):
+    if (az_found and gr_found):
+        if (not book_records.inRecords('books.csv', goodreads_data[3])):
+            book_records.appendRecord('books.csv', amazon_data, goodreads_data)
+            print("Book was saved successfully")
+        else:
+            print("Book is already in your library")
+    else:
+        print("There is no book data to save")
 
 
-def searchBookData():
+def helpMenu():
+    print("'search book' - search a new book")
+    print("'save book'  - save book")
+    print("'quit'       - leave app")
+    print("'help'       - display help menu")
+
+
+def getAction():
+    action = input("Type an action (type help for list of actions): ")
+    commands = ['search book', 'save book', 'help', 'quit', 'show library']
+    while (action not in commands):
+        print("Invalid input")
+        action = input("Type an action (type help for list of actions): ")
+    return action
+
+
+def handleAction(gr_found, az_found, goodreads_data, amazon_data):
+    action = getAction()
+    if (action == 'quit'):
+        quit()
+    elif (action == 'search book'):
+        gr_found, az_found, goodreads_data, amazon_data = searchBookData(gr_found, az_found, goodreads_data, amazon_data)
+    elif (action == 'save book'):
+        saveBook(gr_found, az_found, goodreads_data, amazon_data)
+    elif (action == 'help'):
+        helpMenu()
+    elif (action == 'show library'):
+        book_records.listBooksInLibrary('books.csv')
+
+    return (gr_found, az_found, goodreads_data, amazon_data)
+
+
+def searchBookData(gr_found, az_found, goodreads_data, amazon_data):
     s = getSearch()
 
     print("\nFetching data...\n")
@@ -76,16 +120,15 @@ def searchBookData():
             print("\n")
             print("Sorry, something went wrong with the Amazon scraping")
 
-    # save book
-    if (az_found and gr_found):
-        i = input("\nWould you like to save this book? (y/n) ")
-        if (i == 'y'):
-            saveBook('books.csv', amazon_data, goodreads_data)
+    return (gr_found, az_found, goodreads_data, amazon_data)
 
 
-findReview = 'y'
+def displayTitle():
+    os.system('clear')
+    print("Book Search App")
 
-while (findReview == 'y'):
-    searchBookData()
+
+while (True):
+    # displayTitle()
+    gr_found, az_found, goodreads_data, amazon_data = handleAction(gr_found, az_found, goodreads_data, amazon_data)
     print("\n")
-    findReview = input("Search another book (y/n): ")

@@ -24,6 +24,11 @@ def appendRecord(file, amazon_data, goodreads_data):
     table.close()
 
 
+def listBooksInLibrary(file):
+    df = pd.read_csv(file)
+    for t in df.title:
+        print(t)
+
 def addHeaders(file):
     table = open(file, 'a')
     a = csv.writer(table)
