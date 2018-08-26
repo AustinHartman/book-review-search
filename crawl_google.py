@@ -50,15 +50,18 @@ def saveBook(gr_found, az_found, goodreads_data, amazon_data):
 
 
 def helpMenu():
-    print("'search book' - search a new book")
-    print("'save book'  - save book")
-    print("'quit'       - leave app")
-    print("'help'       - display help menu")
+    print("'search book'    - search a new book")
+    print("'save book'      - save book")
+    print("'quit'           - leave app")
+    print("'help'           - display help menu")
+    print("'show library'   - display title of all saved books")
+    print("'add comment'    - add a comment to a book in saved books")
+    print("'remove book'    - remove a book from saved books")
 
 
 def getAction():
     action = input("Type an action (type help for list of actions): ")
-    commands = ['search book', 'save book', 'help', 'quit', 'show library']
+    commands = ['search book', 'save book', 'help', 'quit', 'show library', 'add comment', 'remove book']
     while (action not in commands):
         print("Invalid input")
         action = input("Type an action (type help for list of actions): ")
@@ -77,6 +80,10 @@ def handleAction(gr_found, az_found, goodreads_data, amazon_data):
         helpMenu()
     elif (action == 'show library'):
         book_records.listBooksInLibrary('books.csv')
+    elif (action == 'add comment'):
+        book_records.bookComment('books.csv')
+    elif (action == 'remove book'):
+        book_records.removeEntry('books.csv')
 
     return (gr_found, az_found, goodreads_data, amazon_data)
 
