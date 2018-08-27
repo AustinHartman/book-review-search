@@ -106,6 +106,7 @@ def searchBookData(gr_found, az_found, goodreads_data, amazon_data):
             print("\n")
             print("Title:", goodreads_data[3])
             print("Author:", goodreads_data[2])
+            print("Description:", goodreads_data[4])
             print("\n")
             print("GOODREADS")
             print("Rating:", goodreads_data[0])
