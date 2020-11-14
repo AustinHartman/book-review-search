@@ -30,7 +30,7 @@ def getURL(query, site):
 
 
 def checkFound(url, site):
-    if (len(url) > 0):
+    if len(url) > 0:
         print("+ " + site + " URL found")
         return True
     else:
@@ -39,8 +39,8 @@ def checkFound(url, site):
 
 
 def saveBook(gr_found, az_found, goodreads_data, amazon_data):
-    if (az_found and gr_found):
-        if (not book_records.inRecords('books.csv', goodreads_data[3])):
+    if az_found and gr_found:
+        if not book_records.inRecords('books.csv', goodreads_data[3]):
             book_records.appendRecord('books.csv', amazon_data, goodreads_data)
             print("Book was saved successfully")
         else:
@@ -62,7 +62,7 @@ def helpMenu():
 def getAction():
     action = input("Type an action (type help for list of actions): ")
     commands = ['search book', 'save book', 'help', 'quit', 'show library', 'add comment', 'remove book']
-    while (action not in commands):
+    while action not in commands:
         print("Invalid input")
         action = input("Type an action (type help for list of actions): ")
     return action
@@ -70,19 +70,19 @@ def getAction():
 
 def handleAction(gr_found, az_found, goodreads_data, amazon_data):
     action = getAction()
-    if (action == 'quit'):
+    if action == 'quit':
         quit()
-    elif (action == 'search book'):
+    elif action == 'search book':
         gr_found, az_found, goodreads_data, amazon_data = searchBookData(gr_found, az_found, goodreads_data, amazon_data)
-    elif (action == 'save book'):
+    elif action == 'save book':
         saveBook(gr_found, az_found, goodreads_data, amazon_data)
-    elif (action == 'help'):
+    elif action == 'help':
         helpMenu()
-    elif (action == 'show library'):
+    elif action == 'show library':
         book_records.listBooksInLibrary('books.csv')
-    elif (action == 'add comment'):
+    elif action == 'add comment':
         book_records.bookComment('books.csv')
-    elif (action == 'remove book'):
+    elif action == 'remove book':
         book_records.removeEntry('books.csv')
 
     return (gr_found, az_found, goodreads_data, amazon_data)
@@ -100,7 +100,7 @@ def searchBookData(gr_found, az_found, goodreads_data, amazon_data):
     az_found = checkFound(amazon_url, "Amazon")
 
     ### NOW SCRAPE DATA FROM WEBSITES IF LINKS FOUND ####
-    if (gr_found):
+    if gr_found:
         try:
             goodreads_data = scrape.getGoodreadsRatings(goodreads_url)
             print("\n")
@@ -116,7 +116,7 @@ def searchBookData(gr_found, az_found, goodreads_data, amazon_data):
             print("\n")
             print("Sorry, something went wrong with the goodreads scraping")
 
-    if (az_found):
+    if az_found:
         try:
             amazon_data = scrape.getAmazonRatings(amazon_url)
             print("\n")
@@ -136,7 +136,8 @@ def displayTitle():
     print("Book Search App")
 
 
-while (True):
-    # displayTitle()
-    gr_found, az_found, goodreads_data, amazon_data = handleAction(gr_found, az_found, goodreads_data, amazon_data)
-    print("\n")
+if __name__ == "__main__":
+    while (True):
+        # displayTitle()
+        gr_found, az_found, goodreads_data, amazon_data = handleAction(gr_found, az_found, goodreads_data, amazon_data)
+        print("\n")
